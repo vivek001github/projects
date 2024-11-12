@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Customization Tool</title>
+</head>
+<body>
+    <h1>Resume Customization Tool</h1>
+    <form action="/customize" method="POST" enctype="multipart/form-data">
+        <label for="resume">Upload Resume (PDF or DOCX):</label>
+        <input type="file" id="resume" name="resume" accept=".pdf,.docx" required><br><br>
+
+        <label for="job_description">Paste Job Description:</label><br>
+        <textarea id="job_description" name="job_description" rows="10" cols="50" required></textarea><br><br>
+
+        <button type="submit">Customize Resume</button>
+    </form>
+</body>
+</html>
