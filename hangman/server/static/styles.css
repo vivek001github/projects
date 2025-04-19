@@ -1,0 +1,39 @@
+from PIL import Image, ImageDraw, ImageFont
+import os
+
+# Ensure static folder exists
+os.makedirs("static", exist_ok=True)
+
+def draw_hangman(stage, filename):
+    """Draws a Hangman stage and saves it as an image."""
+    width, height = 200, 250
+    img = Image.new("RGB", (width, height), "white")
+    draw = ImageDraw.Draw(img)
+
+    # Draw gallows
+    draw.line([(50, 200), (150, 200)], fill="black", width=5)  # Base
+    draw.line([(100, 200), (100, 50)], fill="black", width=5)   # Pole
+    draw.line([(100, 50), (150, 50)], fill="black", width=5)    # Top
+    draw.line([(150, 50), (150, 75)], fill="black", width=5)    # Rope
+
+    # Draw Hangman parts based on the stage
+    if stage >= 1:  # Head
+        draw.ellipse([(135, 75), (165, 105)], outline="black", width=5)
+    if stage >= 2:  # Body
+        draw.line([(150, 105), (150, 160)], fill="black", width=5)
+    if stage >= 3:  # Left Arm
+        draw.line([(150, 115), (130, 140)], fill="black", width=5)
+    if stage >= 4:  # Right Arm
+        draw.line([(150, 115), (170, 140)], fill="black", width=5)
+    if stage >= 5:  # Left Leg
+        draw.line([(150, 160), (130, 190)], fill="black", width=5)
+    if stage >= 6:  # Right Leg
+        draw.line([(150, 160), (170, 190)], fill="black", width=5)
+
+    img.save(filename)
+
+# Generate all 7 Hangman images
+for i in range(7):
+    draw_hangman(i, f"static/hangman{i}.png")
+
+print("Hangman images have been created in the 'static/' folder!")

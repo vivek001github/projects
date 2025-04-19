@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .hidden-word { font-size: 24px; letter-spacing: 10px; }
+        .hangman-image { width: 200px; height: auto; }
+    </style>
+</head>
+<body>
+
+    <h1>Hangman Game</h1>
+    <p>Select Difficulty:</p>
+    <button onclick="startGame('easy')">Easy</button>
+    <button onclick="startGame('medium')">Medium</button>
+    <button onclick="startGame('hard')">Hard</button>
+
+    <p id="hint"></p>
+    <p class="hidden-word" id="word-display">_ _ _ _</p>
+    <img id="hangman-image" src="/static/hangman0.png" class="hangman-image">
+    
+    <br>
+    <input type="text" id="letter-input" maxlength="1">
+    <button onclick="makeGuess()">Guess</button>
+    
+    <p id="message"></p>
+
+    <script>
+        let wordLength = 0;
+        let wrongGuesses = 0;
+        let maxGuesses = 6;
+
+        function startGame(difficulty) {
+            fetch('/start_game', {
+                method: 'POST',
+                body: JSON.stringify({ difficulty }),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                wordLength = data.word_length;
+                document.getElementById("word-display").innerText = "_ ".repeat(wordLength).trim();
+                document.getElementById("hint").innerText = "Hint: " + data.hint;
+                document.getElementById("hangman-image").src = "/static/hangman0.png";
+                wrongGuesses = 0;
+            });
+        }
+
+        function makeGuess() {
+            let letter = document.getElementById("letter-input").value.toUpperCase();
+            if (!letter.match(/[A-Z]/)) {
+                alert("Enter a valid letter!");
+                return;
+            }
+            
+            fetch('/guess', {
+                method: 'POST',
+                body: JSON.stringify({ letter }),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("word-display").innerText = data.display_word.split("").join(" ");
+                document.getElementById("message").innerText = data.message || "";
+                
+                wrongGuesses = data.wrong_guesses;
+                document.getElementById("hangman-image").src = `/static/hangman${wrongGuesses}.png`;
+
+                if (data.game_status === "win") {
+                    alert("Congratulations! You won!");
+                } else if (data.game_status === "lose") {
+                    alert("Game Over! The word was: " + data.word);
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
